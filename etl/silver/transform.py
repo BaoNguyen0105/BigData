@@ -2,7 +2,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 
-from etl.schema import (
+from .schema import (
     dim_customer_schema,
     dim_seller_schema,
     dim_product_schema,

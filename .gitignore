@@ -1,6 +1,6 @@
 # Dữ liệu nặng
 dataset/
-data_warehouse/
+data/
 *.zip
 *.parquet
 

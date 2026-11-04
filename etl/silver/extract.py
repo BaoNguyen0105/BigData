@@ -1,24 +1,12 @@
 from pyspark.sql import SparkSession, DataFrame
 
 
-def get_spark_session(app_name: str = "Olist-DW-ETL") -> SparkSession:
-    """Initialize and return a configured local SparkSession."""
-    spark = (
-        SparkSession.builder
-        .appName(app_name)
-        .master("local[*]")
-        .config("spark.driver.memory", "4g")
-        .config("spark.sql.adaptive.enabled", "true")
-        .config("spark.ui.showConsoleProgress", "false")
-        .getOrCreate()
-    )
-    spark.sparkContext.setLogLevel("ERROR")
-    return spark
-
-
-def extract(spark: SparkSession, dataset_dir: str = "dataset") -> dict[str, DataFrame]:
-    """Read all required raw CSV datasets into Spark DataFrames."""
-    print(f">>> [1/3] Extracting raw datasets from '{dataset_dir}'...")
+def extract(spark: SparkSession, dataset_dir: str = "data/bronze") -> dict[str, DataFrame]:
+    """
+    Đọc toàn bộ các tệp dữ liệu CSV từ tầng Bronze vào PySpark DataFrames.
+    Tương thích với cả thư mục data/bronze/ hoặc dataset/ gốc.
+    """
+    print(f">>> [Silver Extract] Đang trích xuất dữ liệu từ '{dataset_dir}'...")
 
     data = {
         "customers": spark.read.csv(
@@ -42,10 +30,12 @@ def extract(spark: SparkSession, dataset_dir: str = "dataset") -> dict[str, Data
         "translations": spark.read.csv(
             f"{dataset_dir}/product_category_name_translation.csv", header=True, inferSchema=True
         ),
-        # multiLine=True is required because customer reviews contain line breaks
-        "reviews": spark.read.option("header", "true")
-        .option("inferSchema", "true")
-        .option("multiLine", "true")
-        .csv(f"{dataset_dir}/olist_order_reviews_dataset.csv"),
+        # multiLine=True là bắt buộc vì đánh giá của khách hàng chứa nhiều ký tự xuống dòng thô
+        "reviews": (
+            spark.read.option("header", "true")
+            .option("inferSchema", "true")
+            .option("multiLine", "true")
+            .csv(f"{dataset_dir}/olist_order_reviews_dataset.csv")
+        ),
     }
     return data
