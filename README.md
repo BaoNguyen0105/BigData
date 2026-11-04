@@ -70,14 +70,10 @@ BigData/
 ├── dashboard/                      # Giao diện BI Dashboard điều hành (Streamlit)
 │   ├── query.py                    # Data Access Layer: Truy vấn DuckDB từ Data Marts
 │   └── frontend.py                 # Presentation Layer: Tabs, Metrics, Plotly Charts, Insights
-├── tools/                          # Môi trường di động sinh ra bởi setup_env.py (được .gitignore)
-│   ├── jdk-17/                     # OpenJDK 17 x64 portable
-│   └── hadoop/                     # Hadoop 3.3 Winutils & hadoop.dll
 ├── data/                           # Dữ liệu sinh ra theo từng tầng (tự động tạo)
 │   ├── bronze/                     # CSV tầng Bronze
 │   ├── silver/                     # Parquet Star Schema tầng Silver
 │   └── gold/                       # Parquet Data Marts tầng Gold
-├── dataset/                        # Dữ liệu gốc Kaggle Olist E-commerce
 ├── setup_env.py                    # Script tự động tải và cấu hình OpenJDK 17 & Winutils vào tools/
 ├── requirements.txt                # Danh mục thư viện phụ thuộc Python
 ├── run.bat                         # Kịch bản tự động hóa kiểm thử nhiều mốc scale
