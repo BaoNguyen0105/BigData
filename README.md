@@ -86,12 +86,18 @@ BigData/
 
 1. **Tổng doanh thu giao dịch toàn sàn (Gross Merchandise Value - GMV):**
    $$\text{GMV} = \sum (\text{Price} + \text{Freight Value})$$
+
 2. **Tỷ lệ giao hàng đúng hạn (On-Time Delivery Rate):**
-   $$\text{On-Time Rate} = \frac{\sum \text{Đơn hàng có } (\text{delivery\_delay\_days} \le 0)}{\text{Tổng đơn hàng đã giao}} \times 100\%$$
+   $$\text{On-Time Rate} = \frac{N_{\text{on-time}}}{N_{\text{delivered}}} \times 100\%$$
+   *Trong đó:* $N_{\text{on-time}}$ là số đơn hàng có `delivery_delay_days <= 0`, $N_{\text{delivered}}$ là tổng số đơn hàng đã giao thành công.
+
 3. **Tỷ lệ giữ chân khách hàng (Customer Retention Rate):**
-   $$\text{Retention Rate} = \frac{\sum \text{Khách hàng có } \ge 2 \text{ đơn hàng (theo } \texttt{customer\_unique\_id}\text{)}}{\text{Tổng số khách hàng duy nhất}} \times 100\%$$
+   $$\text{Retention Rate} = \frac{C_{\text{repeat}}}{C_{\text{total}}} \times 100\%$$
+   *Trong đó:* $C_{\text{repeat}}$ là số khách hàng có $\ge 2$ đơn hàng (theo `customer_unique_id`), $C_{\text{total}}$ là tổng số khách hàng duy nhất.
+
 4. **Điểm hài lòng khách hàng trung bình (Customer Satisfaction - CSAT):**
-   $$\text{CSAT} = \frac{1}{N} \sum_{i=1}^{N} \text{review\_score}_i \quad (1 \rightarrow 5 \text{ sao})$$
+   $$\text{CSAT} = \frac{1}{N} \sum_{i=1}^{N} \text{Score}_i \quad (1 \rightarrow 5 \text{ sao})$$
+   *Trong đó:* $\text{Score}_i$ là điểm đánh giá hài lòng của đơn hàng thứ $i$ (`review_score`).
 
 ---
 
@@ -150,10 +156,10 @@ Kết quả đo đạc thực tế trên cùng phần cứng máy trạm với t
 | Tiêu chí đo lường | Baseline (CSV + Pandas) | Đề xuất (Parquet Data Mart + DuckDB) | Mức độ cải thiện |
 | :--- | :--- | :--- | :--- |
 | **Số bản ghi đầu vào** | 4,135,802 dòng | 4,135,802 dòng | Ngang hàng (Parity 100%) |
-| **Lỗi định dạng dòng** | Mất $\sim 1.4\%$ do ngắt dòng review | **0% mất mát** (xử lý triệt để `multiLine`) | Bảo toàn toàn vẹn dữ liệu |
+| **Lỗi định dạng dòng** | Mất ~1.4% do ngắt dòng review | **0% mất mát** (xử lý triệt để `multiLine`) | Bảo toàn toàn vẹn dữ liệu |
 | **Thời gian nạp dữ liệu** | 83.228 giây | **< 0.01 giây** | **Nhanh hơn > 8,000 lần** |
 | **Thời gian truy vấn OLAP** | 22.150 giây | **0.164 giây** | **Nhanh hơn ~135 lần** |
-| **RAM đỉnh tiêu thụ** | 235.5 MB | **< 1.0 MB** | Tiết kiệm $>99\%$ bộ nhớ |
+| **RAM đỉnh tiêu thụ** | 235.5 MB | **< 1.0 MB** | Tiết kiệm > 99% bộ nhớ |
 | **Dung lượng lưu trữ đĩa** | 692.1 MB (CSV thô) | **0.06 MB** (Parquet Data Mart) | **Tiết kiệm > 99.9% dung lượng** |
 | **Độ khớp GMV (Parity Check)**| R$ 158,435,532.40 | R$ 158,435,532.40 | **Chính xác tuyệt đối (Diff = 0.00)** |
 
@@ -164,17 +170,17 @@ Kết quả đo đạc thực tế trên cùng phần cứng máy trạm với t
 Hệ thống tích hợp 3 nhận định chiến lược kinh doanh chuyên sâu (đáp ứng trọn vẹn Bước 5 trong Rubric BTL):
 
 1. **Tab 1 – Doanh Số & Ngành Hàng (Trade-offs Giảm Cước Phí Đơn Gộp):**
-   * *Hiện trạng:* Top 10 ngành hàng đóng góp $>50\%$ GMV. Cước vận chuyển chiếm tới $\sim 14 - 17\%$ giá trị giỏ hàng, gây tỷ lệ từ bỏ đơn hàng cao.
-   * *Hành động:* Triển khai chính sách *"Freeship Xtra / Trợ giá cước đơn gộp"* khi giá trị đơn $\ge$ R$ 150 hoặc mua từ 2 món trở lên.
+   * *Hiện trạng:* Top 10 ngành hàng đóng góp > 50% GMV. Cước vận chuyển chiếm tới ~14 - 17% giá trị giỏ hàng, gây tỷ lệ từ bỏ đơn hàng cao.
+   * *Hành động:* Triển khai chính sách *"Freeship Xtra / Trợ giá cước đơn gộp"* khi giá trị đơn >= R$ 150 hoặc mua từ 2 món trở lên.
    * *Đánh đổi rủi ro:* Chịu giảm nhẹ biên lợi nhuận ngắn hạn để tăng trưởng **Giá trị trung bình đơn (AOV)** và số sản phẩm bán ra trên mỗi đơn.
 
 2. **Tab 2 – Vận Hành & Logistics (Khắc Phục Bất Cân Xứng Vùng Miền):**
-   * *Hiện trạng:* Các bang Đông Bắc (MA, CE, AL) có thời gian giao $>20$ ngày, tỷ lệ trễ hạn cao gấp đôi vùng Đông Nam (SP, RJ), kéo điểm CSAT sụt giảm ($<3.8$ sao).
+   * *Hiện trạng:* Các bang Đông Bắc (MA, CE, AL) có thời gian giao > 20 ngày, tỷ lệ trễ hạn cao gấp đôi vùng Đông Nam (SP, RJ), kéo điểm CSAT sụt giảm (< 3.8 sao).
    * *Hành động:* Thiết lập các **Trung tâm hoàn tất đơn hàng (Fulfillment Hubs) vệ tinh** và ký hợp đồng nhà xe nội địa chặng cuối tại Đông Bắc.
-   * *Đánh đổi rủi ro:* Tốn chi phí hạ tầng ban đầu (CAPEX/OPEX), nhưng giảm $>40\%$ tỷ lệ hủy đơn và bảo vệ uy tín thương hiệu.
+   * *Đánh đổi rủi ro:* Tốn chi phí hạ tầng ban đầu (CAPEX/OPEX), nhưng giảm > 40% tỷ lệ hủy đơn và bảo vệ uy tín thương hiệu.
 
 3. **Tab 3 – Khách Hàng & Giữ Chân (Chiến Lược Tái Mua Hàng 30 Ngày):**
-   * *Hiện trạng:* Tỷ lệ khách mua lại cực thấp ($\sim 3.0\%$), hơn 95% khách hàng chỉ mua 1 lần duy nhất rồi rời bỏ sàn. Chi phí thu hút khách mới (CAC) cao nhưng giá trị vòng đời (LTV) chưa được khai thác.
+   * *Hiện trạng:* Tỷ lệ khách mua lại cực thấp (~3.0%), hơn 95% khách hàng chỉ mua 1 lần duy nhất rồi rời bỏ sàn. Chi phí thu hút khách mới (CAC) cao nhưng giá trị vòng đời (LTV) chưa được khai thác.
    * *Hành động:* Gửi tự động **Voucher ưu đãi tái mua hàng (10-15%)** trong vòng **30 ngày** sau khi giao hàng thành công, kết hợp hệ thống tích điểm Loyalty.
    * *Đánh đổi rủi ro:* Chi phí voucher cho khách cũ thấp hơn 5-7 lần so với chi phí quảng cáo tìm khách mới, giúp tối ưu tỷ số LTV/CAC.
 
