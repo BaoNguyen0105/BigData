@@ -12,3 +12,5 @@ __pycache__/
 
 # Local tools (JDK 17 & Hadoop winutils)
 tools/
+
+docs/
