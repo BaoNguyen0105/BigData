@@ -84,20 +84,35 @@ BigData/
 
 ## 🎯 4. HỆ THỐNG KPI CỐT LÕI (BƯỚC 1)
 
-1. **Tổng doanh thu giao dịch toàn sàn (Gross Merchandise Value - GMV):**
-   $$\text{GMV} = \sum (\text{Price} + \text{Freight Value})$$
+### 4.1. Tổng Doanh Thu Giao Dịch Toàn Sàn (Gross Merchandise Value - GMV)
 
-2. **Tỷ lệ giao hàng đúng hạn (On-Time Delivery Rate):**
-   $$\text{On-Time Rate} = \frac{N_{\text{on-time}}}{N_{\text{delivered}}} \times 100\%$$
-   *Trong đó:* $N_{\text{on-time}}$ là số đơn hàng có `delivery_delay_days <= 0`, $N_{\text{delivered}}$ là tổng số đơn hàng đã giao thành công.
+$$\text{GMV} = \sum (\text{Price} + \text{Freight Value})$$
 
-3. **Tỷ lệ giữ chân khách hàng (Customer Retention Rate):**
-   $$\text{Retention Rate} = \frac{C_{\text{repeat}}}{C_{\text{total}}} \times 100\%$$
-   *Trong đó:* $C_{\text{repeat}}$ là số khách hàng có $\ge 2$ đơn hàng (theo `customer_unique_id`), $C_{\text{total}}$ là tổng số khách hàng duy nhất.
+* **Ý nghĩa:** Tổng số tiền giao dịch khách hàng chi trả (gồm tiền hàng và phí vận chuyển).
 
-4. **Điểm hài lòng khách hàng trung bình (Customer Satisfaction - CSAT):**
-   $$\text{CSAT} = \frac{1}{N} \sum_{i=1}^{N} \text{Score}_i \quad (1 \rightarrow 5 \text{ sao})$$
-   *Trong đó:* $\text{Score}_i$ là điểm đánh giá hài lòng của đơn hàng thứ $i$ (`review_score`).
+---
+
+### 4.2. Tỷ Lệ Giao Hàng Đúng Hạn (On-Time Delivery Rate)
+
+$$\text{On-Time Rate} = \frac{N_{\text{on-time}}}{N_{\text{delivered}}} \times 100\%$$
+
+* **Giải thích:** $N_{\text{on-time}}$ là số đơn hàng giao đúng hạn (`delivery_delay_days <= 0`), $N_{\text{delivered}}$ là tổng số đơn hàng đã giao thành công.
+
+---
+
+### 4.3. Tỷ Lệ Giữ Chân Khách Hàng (Customer Retention Rate)
+
+$$\text{Retention Rate} = \frac{C_{\text{repeat}}}{C_{\text{total}}} \times 100\%$$
+
+* **Giải thích:** $C_{\text{repeat}}$ là số khách hàng có $\ge 2$ đơn hàng (theo `customer_unique_id`), $C_{\text{total}}$ là tổng số khách hàng duy nhất trên hệ thống.
+
+---
+
+### 4.4. Điểm Hài Lòng Khách Hàng Trung Bình (Customer Satisfaction - CSAT)
+
+$$\text{CSAT} = \frac{1}{N} \sum_{i=1}^{N} \text{Score}_i \quad (1 \rightarrow 5 \text{ sao})$$
+
+* **Giải thích:** $\text{Score}_i$ là điểm đánh giá hài lòng của đơn hàng thứ $i$ (`review_score`).
 
 ---
 
